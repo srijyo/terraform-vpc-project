@@ -18,6 +18,68 @@ data "aws_ami" "ubuntu" {
 
 }
 
+#########################################
+# IAM Role for SSM
+#########################################
+
+resource "aws_iam_role" "ssm_role" {
+
+  name = "ec2-ssm-role"
+
+  assume_role_policy = jsonencode({
+
+    Version = "2012-10-17"
+
+    Statement = [
+
+      {
+
+        Effect = "Allow"
+
+        Principal = {
+
+          Service = "ec2.amazonaws.com"
+
+        }
+
+        Action = "sts:AssumeRole"
+
+      }
+
+    ]
+
+  })
+
+}
+
+#########################################
+# Attach AmazonSSMManagedInstanceCore
+#########################################
+
+resource "aws_iam_role_policy_attachment" "ssm_policy" {
+
+  role = aws_iam_role.ssm_role.name
+
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+
+}
+
+#########################################
+# Instance Profile
+#########################################
+
+resource "aws_iam_instance_profile" "ssm_profile" {
+
+  name = "ec2-ssm-profile"
+
+  role = aws_iam_role.ssm_role.name
+
+}
+
+#########################################
+# Security Group
+#########################################
+
 resource "aws_security_group" "private_sg" {
 
   name = "private-sg"
@@ -42,6 +104,10 @@ resource "aws_security_group" "private_sg" {
 
 }
 
+#########################################
+# EC2 Instance
+#########################################
+
 resource "aws_instance" "ubuntu" {
 
   ami = data.aws_ami.ubuntu.id
@@ -58,6 +124,8 @@ resource "aws_instance" "ubuntu" {
 
   ]
 
+  iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
+
   tags = {
 
     Name = "private-ubuntu"
@@ -65,8 +133,3 @@ resource "aws_instance" "ubuntu" {
   }
 
 }
-
-
-
-
-
