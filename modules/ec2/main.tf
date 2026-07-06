@@ -18,9 +18,9 @@ data "aws_ami" "ubuntu" {
 
 }
 
-#########################################
-# IAM Role for SSM
-#########################################
+#################################################
+# IAM Role
+#################################################
 
 resource "aws_iam_role" "ssm_role" {
 
@@ -52,9 +52,9 @@ resource "aws_iam_role" "ssm_role" {
 
 }
 
-#########################################
-# Attach AmazonSSMManagedInstanceCore
-#########################################
+#################################################
+# SSM Policy
+#################################################
 
 resource "aws_iam_role_policy_attachment" "ssm_policy" {
 
@@ -64,9 +64,9 @@ resource "aws_iam_role_policy_attachment" "ssm_policy" {
 
 }
 
-#########################################
+#################################################
 # Instance Profile
-#########################################
+#################################################
 
 resource "aws_iam_instance_profile" "ssm_profile" {
 
@@ -76,9 +76,9 @@ resource "aws_iam_instance_profile" "ssm_profile" {
 
 }
 
-#########################################
+#################################################
 # Security Group
-#########################################
+#################################################
 
 resource "aws_security_group" "private_sg" {
 
@@ -88,25 +88,21 @@ resource "aws_security_group" "private_sg" {
 
   egress {
 
-    from_port = 0
+    from_port   = 0
 
-    to_port = 0
+    to_port     = 0
 
-    protocol = "-1"
+    protocol    = "-1"
 
-    cidr_blocks = [
-
-      "0.0.0.0/0"
-
-    ]
+    cidr_blocks = ["0.0.0.0/0"]
 
   }
 
 }
 
-#########################################
-# EC2 Instance
-#########################################
+#################################################
+# Ubuntu EC2
+#################################################
 
 resource "aws_instance" "ubuntu" {
 
